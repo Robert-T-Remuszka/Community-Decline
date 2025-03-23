@@ -14,6 +14,7 @@ from multiprocessing.pool import ThreadPool
 from rich import print
 from rich.progress import track
 
+BASE_FOLDER = "../../../../"
 
 class J2JProcessor(ABC):
     """
@@ -23,9 +24,9 @@ class J2JProcessor(ABC):
     
     def __init__(
         self,
-        raw_folder: str = "./data/j2j/raw/",
-        interim_folder: str = "./data/j2j/interim/",
-        proc_folder: str = "./data/j2j/proc/",
+        raw_folder: str = f"{BASE_FOLDER}/data/j2j/raw/",
+        interim_folder: str = f"{BASE_FOLDER}/data/j2j/interim/",
+        proc_folder: str = f"{BASE_FOLDER}/data/j2j/proc/",
         url_base: str = "https://lehd.ces.census.gov/data/j2j/latest_release/metro/j2jod/"
     ):
         """Initialize the J2J processor with folder locations.
