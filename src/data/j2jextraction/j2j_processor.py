@@ -7,12 +7,16 @@ and aggregating J2J data from the Census Bureau's LEHD program.
 import os
 import time
 import requests
+import logging
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Dict, Any, Optional, Union
 from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 from rich import print
 from rich.progress import track
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 BASE_FOLDER = "../../../../"
 
@@ -70,8 +74,9 @@ class J2JProcessor(ABC):
         dest_list = [self.raw_folder + file for file in file_list]
         inputs = list(zip(orig_list, dest_list))
         
-        print(f"[bold yellow]Downloading {len(file_list)} files...[/bold yellow]")
+        logging.info(f"Downloading {len(file_list)} files...")
         self._download_parallel(inputs)
+        self._log_folder_size(self.raw_folder)
     
     def process_files(self, agg_level: int, aggregation_name: str = "industry"):
         """Process raw files to extract specific aggregation level data.
@@ -142,9 +147,11 @@ class J2JProcessor(ABC):
             r = requests.get(url)
             with open(fn, 'wb') as f:
                 f.write(r.content)
+            file_size = os.path.getsize(fn)
+            logging.info(f"Downloaded {url} ({file_size / (1024 * 1024):.2f} MB)")
             return url, time.time() - t0
         except Exception as e:
-            print(f'Exception in download_url(): {e}')
+            logging.error(f'Exception in download_url(): {e}')
             return url, -1
     
     def _download_parallel(self, args: List[Tuple[str, str]]):
@@ -215,6 +222,10 @@ class J2JProcessor(ABC):
             Aggregated data
         """
         pass
+
+    def _log_folder_size(self, folder: str):
+        total_size = sum(os.path.getsize(os.path.join(folder, f)) for f in os.listdir(folder))
+        logging.info(f"Total size of {folder}: {total_size / (1024 * 1024):.2f} MB")
 
 
 class PandasJ2JProcessor(J2JProcessor):
