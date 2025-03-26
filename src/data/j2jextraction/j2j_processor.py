@@ -268,6 +268,7 @@ class J2JProcessor(ABC):
         self._process_parallel(inputs)
         # TODO: Add loggin message for processing stage
         # TODO: Remove console prints
+        # TODO: Fix the removing of processed files from the list
         # for input_ in inputs:
         #     self._process_file(input_)
     
