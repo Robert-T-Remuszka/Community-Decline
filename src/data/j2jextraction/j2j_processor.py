@@ -469,7 +469,7 @@ class PandasJ2JProcessor(J2JProcessor):
         # Process each chunk and filter
         sub_df = pd.concat([chunk[chunk["agg_level"] == self.agg_level] for chunk in chunks])
         
-        output_file = os.path.join(self.target_dir, file.split("_")[0] + ".csv.gz")
+        output_file = os.path.join(self.target_dir, file.split("_")[1] + ".csv.gz")
         sub_df.to_csv(output_file, index=False)
         print(f"[bold blue]{file} processed.[/bold blue]")
     
